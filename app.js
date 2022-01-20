@@ -5,7 +5,6 @@ const logger = require('morgan');
 const mongoose = require('mongoose')
 require('dotenv').config();
 const connect_key = process.env.MONGOOSE_CONNECT_KEY;
-console.log(process.env);
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');

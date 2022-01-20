@@ -85,7 +85,6 @@ router.post('/tracks', passport.authenticate('jwt', {session: false}), async (re
     { GenreId: req.body.GenreId })
     const albumCheck = await Album.findOne(
       { AlbumId: req.body.AlbumId })
-    console.log(genreCheck)
     if (genreCheck && albumCheck) {
   try { 
     const track = new Track({
