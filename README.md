@@ -62,6 +62,7 @@ Testing of routes in Postman Application
 Deployment testing and notes for Swagger.io documentation as Swagger inspector still not working. Also issues with update to editor. 
 21.01.22 
 Continuation of Swagger notes. To implement npm install --save swagger-ui-express added. 
+I added an additional endpoint to what was required by the spec by returning all tracks to provide inspiration to the user.
 22.01.22 
 Implemented isdb-project.json as back up to Swagger documentation
 ## Presentation ##

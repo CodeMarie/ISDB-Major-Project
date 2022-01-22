@@ -340,20 +340,29 @@
             "content": {
               "application/json; charset=utf-8": {
                 "schema": {
-                  "type": "string"
+                  "type": "object"
                 },
-                "examples": {}
+                "examples": {
+                  "album": [
+                      {
+                          "_id": "61e5e696ee468b7e4bb19297",
+                          "AlbumId": 16,
+                          "Title": "Black Sabbath",
+                          "ArtistId": "12"
+                      }
+                  ]
+              }
               }
             }
           },
           "401": {
-            "description": "Auto generated using Swagger Inspector",
+            "description": "Unauthorised access",
             "content": {
               "application/json; charset=utf-8": {
                 "schema": {
                   "type": "string"
                 },
-                "examples": {}
+                "examples": {"message":"Unauthorised"}
               }
             }
           }
