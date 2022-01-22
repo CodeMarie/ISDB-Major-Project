@@ -1,0 +1,484 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "isdb-project",
+    "description": "Song database likened to IMDB used for searching for Album, Tracks, Artists. It also allows logged in users to post new Tracks",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Marie",
+      "email": "some-example-emaiil@a-random-domain.com",
+      "url": "http://[enter-url-here]"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:4000",
+      "description": "Local development URL"
+  }, 
+    {
+      "url": "https://isdb-major-project.herokuapp.com",
+      "description": "url for deployment site"
+    }
+  ],
+  "tags": [
+    {
+        "name": "routes",
+        "description": "Song access operations"
+    },
+    {
+      "name": "users",
+      "description": "Authentication operations"
+  }
+],
+  "paths": {
+    "/api/register": {
+      "post": {
+        "description": "Registers a new user",
+        "tags" : [ "Users" ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/api_register_body"
+              },
+              "examples": {
+                "0": {
+                  "value": " {\n        \"username\": \"Sarah123\",\n        \"password\": \"Test123\"\n        \n    }"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful creation of a new user",
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": {"message": "registration successful"}
+              }
+            }
+          },
+          "401": {
+            "description": "An Unauthorised response status code which informs that it lacks valid authentication credentials for the requested details",
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": {"message": "username is already in use"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/login": {
+      "post": {
+        "description": "Login with previously registered username and password",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/api_login_body"
+              },
+              "examples": {
+                "0": {
+                  "value": " {\n        \"username\": \"Sarah123\",\n        \"password\": \"Test123\"\n        \n    }"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The request was successful, authenticated login with a token released for user access",
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": {"message": "login successful.",
+                  "token": "token information"}
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid authentication of the login details, providing an authorised response",
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": {"message": "invalid password."}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/genres": {
+      "get": {
+        "description": "Request for all genre information",
+        "responses": {
+          "200": {
+            "description": "Successful get request providing information about all genres",
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": [
+                  {
+                      "_id": "61e5e7f3a5c7edcc0d6ca340",
+                      "GenreId": 1,
+                      "Name": "Rock"
+                  },
+                  {
+                      "_id": "61e5e7f3a5c7edcc0d6ca341",
+                      "GenreId": 4,
+                      "Name": "Alternative & Punk"
+                  }]
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorised access to genre information, e.g. lacking correct token details",
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": {"message": "Unauthorised"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tracks/": {
+      "get": {
+        "description": "Request for all tracks information",
+        "responses": {
+          "200": {
+            "description": "Successful get request providing information about all tracks available",
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/api_tracks_body"
+                },
+                "examples": [
+                  {
+                    "_id": "61e5e816f606073d62f2f2a4",
+                    "TrackId": 1,
+                    "Name": "For Those About To Rock (We Salute You)",
+                    "AlbumId": 1,
+                    "MediaTypeId": 1,
+                    "GenreId": 1,
+                    "Composer": "Angus Young, Malcolm Young, Brian Johnson",
+                    "Milliseconds": 343719,
+                    "Bytes": 11170334,
+                    "UnitPrice": 0.99
+                },
+                {
+                    "_id": "61e5e816f606073d62f2f2a5",
+                    "TrackId": 2,
+                    "Name": "Balls to the Wall",
+                    "AlbumId": 2,
+                    "MediaTypeId": 2,
+                    "GenreId": 1,
+                    "Composer": "",
+                    "Milliseconds": 342562,
+                    "Bytes": 5510424,
+                    "UnitPrice": 0.99
+                }]
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorised access to all track information, e.g. lacking correct information of details",
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": {"message": "Unauthorised"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tracks/:id": {
+      "get": {
+        "description": "Request for a specific track by TrackId parameter",
+        "parameters": [
+          {
+              "name": "id",
+              "in": "path",
+              "description": "ID of track to use",
+              "required": true,
+              "schema": {
+                  "type": "integer",
+                  "format": "int32"
+              }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful authorization to a certain requested track",
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": {
+                  "_id": "61e5e816f606073d62f2f2a5",
+                  "TrackId": 2,
+                  "Name": "Balls to the Wall",
+                  "AlbumId": 2,
+                  "MediaTypeId": 2,
+                  "GenreId": 1,
+                  "Composer": "",
+                  "Milliseconds": 342562,
+                  "Bytes": 5510424,
+                  "UnitPrice": 0.99
+              }
+              }
+            }
+          },
+          "404": {
+            "description": "Bad server access to request not found",
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": {"message": "Track not found"}
+              }
+          },
+          "401": {
+            "description": "Unauthorised access to track information",
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": {"message": "Unauthorised"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/artists/:id": {
+      "get": {
+        "description": "Request for a specific track by Artist id parameter",
+        "parameters": [
+          {
+              "name": "id",
+              "in": "path",
+              "description": "ID of track to use",
+              "required": true,
+              "schema": {
+                  "type": "integer",
+                  "format": "int32"
+              }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful access to a specific artist searched for by ArtistId",
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": {
+                  "artist": [
+                      {
+                          "_id": "61e5e7cc17c1aa9503be506b",
+                          "ArtistId": 12,
+                          "Name": "Black Sabbath"
+                      }
+                  ]
+               }
+              }
+            }
+          },
+          "404": {
+            "description": "Bad server access to this request not found",
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": {"message": "Artist not found"}
+              }
+          },
+          "401": {
+            "description": "Unauthorised access",
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": {"message": "Unauthorised"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/albums/:id": {
+      "get": {
+        "description": "Auto generated using Swagger Inspector",
+        "responses": {
+          "200": {
+            "description": "Auto generated using Swagger Inspector",
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": {}
+              }
+            }
+          },
+          "401": {
+            "description": "Auto generated using Swagger Inspector",
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tracks": {
+      "post": {
+        "description": "Posting of a track on the system",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/api_tracks_body"
+              },
+              "examples": {
+                "0": {
+                  "value": " {\n      \"TrackId\": 80,\n      \"Name\": \"Wild Roses\",\n      \"AlbumId\": 3,\n      \"MediaTypeId\": 2,\n      \"GenreId\": 5,\n      \"Composer\": \"F. Baltes, R.A. Smith-Diesel, S. Kaufman, U. Dirkscneider & W. Hoffman\",\n      \"Milliseconds\": 252051,\n      \"Bytes\": 4331779,\n      \"UnitPrice\": 0.99\n    }"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful posting of new track, GenreId and AlbumId required",
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "TrackId": 80,
+                  "Name": "Wild Roses",
+                  "AlbumId": 3,
+                  "MediaTypeId": 2,
+                  "GenreId": 5,
+                  "Composer": "F. Baltes, R.A. Smith-Diesel, S. Kaufman, U. Dirkscneider & W. Hoffman",
+                  "Milliseconds": 252051,
+                  "Bytes": 4331779,
+                  "UnitPrice": 0.99
+              }
+            }
+          },
+          "404": {
+            "description": "Request not found",
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": { "message": "GenreId or AlbumId were not found"}
+                }
+              },
+          "401": {
+            "description": "Unauthorised access",
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": {"message":"Unauthorised"}
+              }
+            }
+          }
+        }
+    }
+  },
+  "components": {
+    "schemas": {
+      "api_register_body": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          }
+        }
+      },
+      "api_login_body": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          }
+        }
+      },
+      "api_tracks_body": {
+        "type": "object",
+        "properties": {
+          "TrackId:": {
+            "type": "number"
+          },
+          "Name": {
+            "type": "string"
+          },
+          "AlbumId": {
+            "type": "number"
+          },
+          "MediaTypeId": {
+            "type": "number"
+          },
+          "GenreId": {
+            "type": "number"
+          },
+          "Composer": {
+            "type": "string"
+          },
+          "Milliseconds": {
+            "type": "number"
+          },
+          "Bytes": {
+            "type": "number"
+          },
+          "UnitPrice": {
+            "type": "number"
+                       }
+                     }
+                   }
+                 }
+               }
+             }
+           }
+         }
+       }
+     }
+   }
+ }
+

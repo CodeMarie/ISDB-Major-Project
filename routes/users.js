@@ -4,11 +4,11 @@ const { User } = require("../models/user");
 const jwt = require("jsonwebtoken");
 const passport = require("passport");
 const passportJwt = require("passport-jwt");
-const secret_or_key = process.env.SECRET_OR_KEY
+const secret_or_key = process.env.SECRET_OR_KEY;
 
 const jwtOptions = {
   jwtFromRequest: passportJwt.ExtractJwt.fromAuthHeaderWithScheme("jwt"),
-  secretOrKey: secret_or_key
+  secretOrKey: secret_or_key,
 };
 
 router.use(express.json());
@@ -26,7 +26,6 @@ let strategy = new passportJwt.Strategy(jwtOptions, (jwtPayload, next) => {
 
 passport.use(strategy);
 
-
 router.get("/", async (req, res) => {
   try {
     const usersArray = await User.find();
@@ -40,42 +39,38 @@ router.post("/login", (req, res) => {
   if (req.body.username && req.body.password) {
     const username = req.body.username;
     const password = req.body.password;
-    User.findOne({ username: username },
-      function (err, user) {
+    User.findOne({ username: username }, function (err, user) {
+      if (err) {
+        res.status(401).json(err);
+      } else if (!user) {
+        return res.status(401).json({
+          message: "user not registered.",
+        });
+      }
+      user.authenticate(password, function (err, user) {
         if (err) {
           res.status(401).json(err);
-        } else if (!user) {
-          return res.status(401).json({
-            message: "user not registered."
+        }
+        if (user) {
+          const payload = { id: user.id };
+          const token = jwt.sign(payload, jwtOptions.secretOrKey);
+          res.status(200).json({
+            message: "login successful.",
+            token: token,
+          });
+        } else {
+          res.status(401).json({
+            message: "invalid password.",
           });
         }
-        user.authenticate(
-          password,
-          function (err, user) {
-            if (err) {
-              res.status(401).json(err)
-            }
-            if (user) {
-              const payload = { id: user.id };
-              const token = jwt.sign(payload, jwtOptions.secretOrKey);
-              res.status(200).json({
-                message: "login successful.",
-                token: token
-              });
-            } else {
-              res.status(401).json({
-                message: "invalid password."
-              });
-            }
-          });
       });
+    });
   } else {
     res.status(401).json({
-      message: "missing username or password."
+      message: "missing username or password.",
     });
   }
 });
-
 
 router.post("/register", (req, res) => {
   if (req.body.username && req.body.password) {
@@ -83,7 +78,7 @@ router.post("/register", (req, res) => {
       if (err) {
         res.status(401).json(err);
       } else if (user) {
-        res.status(401).json({ message: "username is in use" });
+        res.status(401).json({ message: "username is already in use" });
       } else {
         const newUser = new User({ username: req.body.username });
         User.register(newUser, req.body.password, (err) => {
